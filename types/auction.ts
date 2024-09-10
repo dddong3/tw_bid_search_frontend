@@ -21,6 +21,7 @@ export interface AuctionItem {
   Deposit: Int;
   Notes: string;
   Remark: string;
+  UpdatedAt: string;
 }
 
 export interface AuctionItemConnection {

@@ -8,8 +8,9 @@
           :key="index"
           :type="getButtonClass(pdf)"
           class="mr-2"
-          @click="viewPDF(pdf)"
-        >
+            @mousedown="(event: MouseEvent) => viewPDF(pdf, event)"
+          >
+          <!-- @click="viewPDF(pdf)" -->
           查看 {{ pdf }}
         </a-button>
         <a-button
@@ -60,11 +61,14 @@ async function fetchPDFFiles() {
   }
 }
 
-function viewPDF(fileType: string) {
+function viewPDF(fileType: string, event: MouseEvent) {
   if (!props.auctionItem) return;
   const { Court, CaseYear, CaseID, CaseNo } = props.auctionItem;
   const fileUrl = `${runtimeConfig.public.backendApiUrl}/api/files/pdf/${Court}/${CaseYear}/${CaseID}/${CaseNo}/${fileType}`;
-  window.open(fileUrl, '_blank');
+  // window.open(fileUrl, '_blank');
+  if(event.button === 0 || event.button === 1 ||event.ctrlKey || event.metaKey) {
+    window.open(fileUrl, '_blank');
+  }    
 }
 
 async function downloadPDF(fileType: string) {

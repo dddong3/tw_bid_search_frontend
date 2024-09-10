@@ -21,6 +21,7 @@ const GET_AUCTION_ITEMS = gql`
         Deposit
         Notes
         Remark
+        UpdatedAt
       }
     }
   }
