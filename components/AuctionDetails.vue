@@ -14,7 +14,7 @@
 import type { AuctionItem } from '~/types/auction';
 import { format } from 'date-fns';
 
-const props = defineProps<{ auctionItem: AuctionItem }>();
+defineProps<{ auctionItem: AuctionItem }>();
 
 const formatSaleDate = (date: string) => {
   return format(new Date(date), 'yyyy-MM-dd');

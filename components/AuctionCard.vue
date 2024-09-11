@@ -32,12 +32,6 @@ const router = useRouter();
 const navigateToDetail = (item) => {
   router.push(`/auction/item?id=${item.id}`);
 };
-
-
-const handleClick = (item) => {
-  console.log(item.id);
-};
-
 </script>
 
 <style scoped>

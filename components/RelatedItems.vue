@@ -27,7 +27,7 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE;
 import { format } from 'date-fns';
 import type { AuctionItem } from '~/types/auction';
 
-const props = defineProps({
+defineProps({
   items: {
     type: Array as () => AuctionItem[],
     required: true,

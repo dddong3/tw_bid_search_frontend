@@ -8,19 +8,10 @@
           :key="index"
           :class="getButtonClass(pdf)"
           class="mr-2"
-            @mousedown="(event: MouseEvent) => viewPDF(pdf, event)"
-          >
+          @mousedown="(event: MouseEvent) => viewPDF(pdf, event)"
+        >
           查看 {{ pdf }}
         </a-button>
-        <!-- <a-button
-          v-for="(pdf, index) in pdfFiles"
-          :key="'download-' + index"
-          :class="getButtonClass(pdf)"
-          class="mr-2"
-          @click="downloadPDF(pdf)"
-        >
-          下載 {{ pdf }}
-        </a-button> -->
       </div>
       <a-empty v-else description="沒有可用的文件"></a-empty>
     </a-spin>
@@ -30,9 +21,10 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import { useRuntimeConfig } from '#app';
+import type { AuctionItem } from '~/types/auction'; // 引入 AuctionItem 類型
 
 const props = defineProps<{
-  auctionItem: any | null;
+  auctionItem: AuctionItem | null;
 }>();
 
 const pdfFiles = ref<string[]>([]);
@@ -64,31 +56,9 @@ function viewPDF(fileType: string, event: MouseEvent) {
   if (!props.auctionItem) return;
   const { Court, CaseYear, CaseID, CaseNo } = props.auctionItem;
   const fileUrl = `${runtimeConfig.public.backendApiUrl}/api/files/pdf/${Court}/${CaseYear}/${CaseID}/${CaseNo}/${fileType}`;
-  // window.open(fileUrl, '_blank');
-  if(event.button === 0 || event.button === 1 ||event.ctrlKey || event.metaKey) {
+  if(event.button === 0 || event.button === 1 || event.ctrlKey || event.metaKey) {
     window.open(fileUrl, '_blank');
   }    
-}
-
-async function downloadPDF(fileType: string) {
-  if (!props.auctionItem) return;
-  const { Court, CaseYear, CaseID, CaseNo } = props.auctionItem;
-  const fileUrl = `${runtimeConfig.public.backendApiUrl}/api/files/pdf/${Court}/${CaseYear}/${CaseID}/${CaseNo}/${fileType}`;
-  try {
-    const response = await fetch(fileUrl);
-    if (!response.ok) throw new Error('Failed to download file');
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.setAttribute('download', `${Court}-${CaseYear}${CaseID}${CaseNo}-${fileType}.pdf`);
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error('Error downloading PDF:', error);
-  }
 }
 
 function getButtonClass(pdf: string) {
@@ -109,33 +79,15 @@ function getButtonClass(pdf: string) {
   color: white;
 }
 
-.warning-button:hover {
-  background-color: #ffc53d;
-  border-color: #ffc53d;
-  color: white;
-}
-
 .danger-button {
   background-color: #f5222d;
   border-color: #f5222d;
   color: white;
 }
 
-.danger-button:hover {
-  background-color: #ff4d4f;
-  border-color: #ff4d4f;
-  color: white;
-}
-
 .default-button {
   background-color: #1890ff;
   border-color: #1890ff;
-  color: white;
-}
-
-.default-button:hover {
-  background-color: #40a9ff;
-  border-color: #40a9ff;
   color: white;
 }
 </style>

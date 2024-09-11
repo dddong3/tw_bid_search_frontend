@@ -65,6 +65,7 @@ const loadAuctionItemDetails = async (id: string) => {
     }
   } catch (err) {
     error.value = 'Error fetching auction item';
+    console.error(err);
   } finally {
     loading.value = false;
   }
@@ -87,6 +88,7 @@ const loadRelatedItems = async () => {
     );
   } catch (err) {
     error.value = 'Failed to fetch related auction items';
+    console.error(err);
   }
 };
 
