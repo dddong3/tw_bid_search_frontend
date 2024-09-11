@@ -1,13 +1,13 @@
 import { ref } from 'vue';
 import { useNuxtApp } from '#app';
 import { gql } from 'graphql-request';
-import type { AuctionItemResponse, AuctionItem, AuctionItemNode } from '~/types/auction';
 
-const GET_AUCTION_ITEMS = gql`
+const GET_AUCTION_ITEM_BY_ID = gql`
   query getAuctionItemWithId($id: Int!) {
     getAuctionItemWithId(id: $id) {
       node {
         id
+        RowId
         CaseYear
         CaseID
         CaseNo
@@ -28,31 +28,17 @@ const GET_AUCTION_ITEMS = gql`
 `;
 
 export const useAuctionItemDetail = (id: number) => {
-  const { $graphql } = useNuxtApp();
-  const auctionItem = ref<AuctionItem | null>(null);
+  const auctionItem = ref(null);
   const loading = ref(true);
-  const error = ref<string | null>(null);
-  
+  const error = ref(null);
 
   const fetchAuctionItemDetail = async () => {
+    const { $graphql } = useNuxtApp();
     try {
-      if (isNaN(id)) {
-        throw new Error('Invalid auction item ID');
-      }
-
-      const result = await $graphql.request<AuctionItemNode>(GET_AUCTION_ITEMS, { id });
-      auctionItem.value = result?.getAuctionItemWithId?.node || null;
-
-      if (!auctionItem.value) {
-        throw new Error('Auction item not found');
-      }
+      const result = await $graphql.request(GET_AUCTION_ITEM_BY_ID, { id });
+      auctionItem.value = result.getAuctionItemWithId?.node || null;
     } catch (err) {
-      if (err instanceof Error) {
-        error.value = err.message;
-      }
-      else {
-        error.value = 'Error fetching auction item';
-      }
+      error.value = err;
     } finally {
       loading.value = false;
     }

@@ -6,14 +6,13 @@
         <a-button
           v-for="(pdf, index) in pdfFiles"
           :key="index"
-          :type="getButtonClass(pdf)"
+          :class="getButtonClass(pdf)"
           class="mr-2"
             @mousedown="(event: MouseEvent) => viewPDF(pdf, event)"
           >
-          <!-- @click="viewPDF(pdf)" -->
           查看 {{ pdf }}
         </a-button>
-        <a-button
+        <!-- <a-button
           v-for="(pdf, index) in pdfFiles"
           :key="'download-' + index"
           :class="getButtonClass(pdf)"
@@ -21,7 +20,7 @@
           @click="downloadPDF(pdf)"
         >
           下載 {{ pdf }}
-        </a-button>
+        </a-button> -->
       </div>
       <a-empty v-else description="沒有可用的文件"></a-empty>
     </a-spin>
@@ -93,9 +92,9 @@ async function downloadPDF(fileType: string) {
 }
 
 function getButtonClass(pdf: string) {
-  if (pdf.includes('更正公告')) return 'orange-button';
-  if (pdf.includes('停拍公告')) return 'danger';
-  return 'primary';
+  if (pdf.includes('更正公告')) return 'warning-button';
+  if (pdf.includes('停拍公告')) return 'danger-button';
+  return 'default-button';
 }
 </script>
 
@@ -103,14 +102,40 @@ function getButtonClass(pdf: string) {
 .pdf-section {
   margin-top: 16px;
 }
-.orange-button {
-  background-color: orange;
-  border-color: orange;
+
+.warning-button {
+  background-color: #faad14;
+  border-color: #faad14;
   color: white;
 }
-.red-button {
-  background-color: red;
-  border-color: red;
+
+.warning-button:hover {
+  background-color: #ffc53d;
+  border-color: #ffc53d;
+  color: white;
+}
+
+.danger-button {
+  background-color: #f5222d;
+  border-color: #f5222d;
+  color: white;
+}
+
+.danger-button:hover {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+  color: white;
+}
+
+.default-button {
+  background-color: #1890ff;
+  border-color: #1890ff;
+  color: white;
+}
+
+.default-button:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
   color: white;
 }
 </style>

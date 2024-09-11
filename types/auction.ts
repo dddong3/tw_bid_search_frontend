@@ -8,6 +8,7 @@ export interface PageInfo {
 
 export interface AuctionItem {
   id: string;
+  RowId: string;
   CaseYear: Int;
   CaseID: string;
   CaseNo: string;
