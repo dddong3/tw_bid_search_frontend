@@ -16,7 +16,8 @@
 
     <RelatedItems :items="relatedItems" @itemClick="goToAuctionItem" />
   </a-card>
-  <a-spin v-if="loading" />
+  <!-- <a-spin v-if="loading" /> -->
+  <!-- <a-spin /> -->
   <a-alert v-if="error" :message="error" type="error" show-icon />
 </template>
 

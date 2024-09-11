@@ -1,4 +1,3 @@
-<!-- components/RelatedItems.vue -->
 <template>
   <div class="related-items-container">
     <h4>相關拍賣物品</h4>
@@ -9,12 +8,14 @@
         :key="item.id"
         @click="handleClick(item.id)"
       >
-        <a-card>
-          <p><strong>{{ item.Name }}</strong></p>
-          <p>拍賣日: {{ formatSaleDate(item.SaleDate) }}</p>
-          <p v-if="typeof item.TotalPrice === 'number'">總價: {{ currencyFormat(item.TotalPrice) }}</p>
-          <p v-else>總價: 資料無效</p> 
-        </a-card>
+        <a-spin :spinning="loading">
+          <a-card>
+            <p><strong>{{ item.Name }}</strong></p>
+            <p>拍賣日: {{ formatSaleDate(item.SaleDate) }}</p>
+            <p v-if="typeof item.TotalPrice === 'number'">總價: {{ currencyFormat(item.TotalPrice) }}</p>
+            <p v-else>總價: 資料無效</p>
+          </a-card>
+        </a-spin>
       </div>
     </div>
     <a-empty :image="simpleImage" v-else description="沒有相關拍賣物品"/>
@@ -22,12 +23,15 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import { Empty } from 'ant-design-vue';
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE;
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import type { AuctionItem } from '~/types/auction';
 
-defineProps({
+const loading = ref(false);
+
+const props = defineProps({
   items: {
     type: Array as () => AuctionItem[],
     required: true,
@@ -36,8 +40,21 @@ defineProps({
 
 const emit = defineEmits(['itemClick']);
 
+watch(
+  () => props.items,
+  (newItems, oldItems) => {
+    if (newItems !== oldItems) {
+      setTimeout(() => {
+          loading.value = false;
+      }, 200);
+    }
+  },
+  { immediate: true }
+);
+
 const handleClick = (id: string) => {
   emit('itemClick', id);
+  loading.value = true;
 };
 
 function currencyFormat(value: number) {
