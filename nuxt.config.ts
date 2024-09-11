@@ -8,10 +8,12 @@ export default defineNuxtConfig({
     }
   ],
   plugins: [
-    '~/plugins/ant-design-vue.ts',
     '~/plugins/graphql-client.ts'
   ],
   css: ['~/assets/css/tailwind.css'],
+  modules: [
+    '@ant-design-vue/nuxt'
+  ],
   postcss: {
     plugins: {
       tailwindcss: {},
