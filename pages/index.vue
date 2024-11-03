@@ -1,47 +1,51 @@
 <template>
-  <div ref="scrollContainer" class="scroll-container" @scroll="saveScrollPosition">
-    <div class="search-bar">
-      <a-input-search
-        placeholder="輸入物品名稱進行搜尋"
-        v-model:value.lazy="searchQuery"
-        class="search-input"
-        allow-clear
-      />
-
-    <a-form layout="vertical">
-      <a-form-item label="選擇日期範圍">
+  <div class="w-screen h-screen flex flex-col">
+    <!-- 搜索與範圍選擇 -->
+    <div class="flex w-full justify-center items-center mt-4 mb-4">
+      <div class="flex w-2/3 gap-4 items-center">
+        <a-input-search
+          placeholder="輸入物品名稱進行搜尋"
+          v-model:value.lazy="searchQuery"
+          class="search-input w-full"
+          allow-clear
+        />
         <a-range-picker
           v-model:value="dateRange"
           @change="onDateChange"
           format="YYYY-MM-DD"
-          :placeholder="['開始日期', '結束日期']"
-        />
-      </a-form-item>
-    </a-form>
-    </div>
-
-    <a-spin :spinning="loading">
-      <div class="card-container">
-        <AuctionCard
-          v-for="item in auctionItems"
-          :key="item.id"
-          :item="item"
-          :loading="loading"
+          :placeholder="['法拍開始日期', '法拍結束日期']"
+          class="w-full"
         />
       </div>
-    </a-spin>
+    </div>
 
-    <a-pagination
-      v-if="totalItems > 0"
-      :current="pagination.current"
-      :total="totalItems"
-      :pageSize="pagination.pageSize"
-      show-size-changer
-      :pageSizeOptions="['10', '20', '50', '100']"
-      @change="onPageChange"
-      @showSizeChange="onPageSizeChange"
-    />
-    <a-empty v-else description="無相關結果" />
+    <div ref="scrollContainer" class="scroll-container flex-1 overflow-y-auto" @scroll="saveScrollPosition">
+      <a-spin :spinning="loading" size="large" tip="載入中...">
+        <div v-if="auctionItems.length > 0" class="card-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+          <AuctionCard
+            v-for="item in auctionItems"
+            :key="item.id"
+            :item="item"
+            :loading="loading"
+            v-lazy="true"
+          />
+        </div>
+        <a-empty v-else-if="!loading" description="無相關結果" />
+        <div v-else class="w-full pt-32"></div>
+      </a-spin>
+    </div>
+
+    <div class="flex justify-center w-full py-4 bg-gray-100">
+      <a-pagination
+        :current="pagination.current"
+        :total="totalItems"
+        :pageSize="pagination.pageSize"
+        show-size-changer
+        :pageSizeOptions="['10', '20', '50', '100']"
+        @change="onPageChange"
+        @showSizeChange="onPageSizeChange"
+      />
+    </div>
   </div>
 </template>
 
@@ -49,15 +53,14 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import AuctionCard from '~/components/AuctionCard.vue';
 import { useAuctionItemsWithQuery } from '~/composables/useAuctionItemsWithQuery';
-// import { useAuctionItems } from '~/composables/useAuctionItems';
-// import { debounce } from 'lodash';
 import { debounce } from 'lodash-es';
-// import { se } from 'date-fns/locale/se';
 import dayjs from 'dayjs';
+import { message } from 'ant-design-vue';
 
-// 設定初始日期範圍
 
 
+
+const formatToYYYYMMDD = (date) => date.format('YYYY-MM-DD');
 const auctionItems = ref([]);
 const totalItems = ref(0);
 const loading = ref(true);
@@ -97,7 +100,7 @@ onMounted(() => {
     }
   }, 100);
 
-  dateRange.value = [...defaultRange];
+  // dateRange.value = [...defaultRange];
 });
 
 onBeforeUnmount(() => {
@@ -132,28 +135,34 @@ const onSearch = () => {
 watch(searchQuery, onSearch);
 
 
-const onDateChange = (dates) => {
-  // console.log('Selected Date Range: ', dates);
-  // console.log(dateRange.value[0].year(), dateRange.value[0].month() + 1, dateRange.value[0].date());
-  // console.log(dateRange.value[1].year(), dateRange.value[1].month() + 1, dateRange.value[1].date());
+const onDateChange = () => {
   fetchItemsWithQuery();
 };
-
 const fetchItemsWithQuery = debounce(async () => {
   loading.value = true;
-  console.log(searchQuery.value);
-  console.log(searchQuery);
-  const result = await useAuctionItemsWithQuery(
-    searchQuery.value,
-    dateRange.value[0].format('YYYY-MM-DD'),
-    dateRange.value[1].format('YYYY-MM-DD'),
-    pagination.value.current,
-    pagination.value.pageSize,
-  );
   
-  auctionItems.value = result.nodes;
-  totalItems.value = result.pageInfo.totalCount;
-  loading.value = false;
+  const [startDate, endDate] = dateRange.value[0] && dateRange.value[1]
+    ? dateRange.value
+    : defaultRange;
+
+  try {
+    const { nodes, pageInfo } = await useAuctionItemsWithQuery(
+      searchQuery.value,
+      formatToYYYYMMDD(startDate),
+      formatToYYYYMMDD(endDate),
+      pagination.value.current,
+      pagination.value.pageSize
+    );
+
+    auctionItems.value = nodes;
+    totalItems.value = pageInfo.totalCount;
+
+  } catch (error) {
+    console.error('Error fetching auction items:', error);
+    message.error('無法載入拍賣項目，請稍後再試');
+  } finally {
+    loading.value = false;
+  }
 }, 300);
 
 function saveScrollPosition() {
@@ -196,4 +205,28 @@ a-empty {
   text-align: center;
   margin-top: 20px;
 }
+
+.scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 4px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.pagination-container {
+  position: fixed;
+  bottom: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: white;
+  padding: 10px 0;
+}
+
 </style>
