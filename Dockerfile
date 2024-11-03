@@ -4,13 +4,13 @@ WORKDIR /app
 
 ARG BACKEND_API_URL
 
-COPY package.json .
+COPY package.json yarn.lock .
 
-RUN npm install
+RUN yarn install
 
 COPY . .
 
-RUN npm run build
+RUN yarn build
 
 FROM node:hydrogen-alpine AS production
 
