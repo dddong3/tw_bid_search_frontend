@@ -50,7 +50,8 @@ import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import AuctionCard from '~/components/AuctionCard.vue';
 import { useAuctionItemsWithQuery } from '~/composables/useAuctionItemsWithQuery';
 // import { useAuctionItems } from '~/composables/useAuctionItems';
-import { debounce } from 'lodash';
+// import { debounce } from 'lodash';
+import { debounce } from 'lodash-es';
 // import { se } from 'date-fns/locale/se';
 import dayjs from 'dayjs';
 
