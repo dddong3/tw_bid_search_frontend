@@ -9,13 +9,24 @@
           class="search-input w-full"
           allow-clear
         />
-        <a-range-picker
+        <!-- <a-range-picker
           v-model:value="dateRange"
           @change="onDateChange"
           format="YYYY-MM-DD"
           :placeholder="['法拍開始日期', '法拍結束日期']"
           class="w-full"
         />
+        <a-button type="default" @click="clearDateRange" class=" space-x-3 ">清除日期</a-button> -->
+        <div class="flex items-center gap-1 w-full">
+          <a-range-picker
+            v-model:value="dateRange"
+            @change="onDateChange"
+            format="YYYY-MM-DD"
+            :placeholder="['法拍開始日期', '法拍結束日期']"
+            class="w-full"
+          />
+          <a-button type="default" @click="clearDateRange" class="px-2">清除日期</a-button>
+        </div>
       </div>
     </div>
 
@@ -99,8 +110,6 @@ onMounted(() => {
       scrollContainer.value.scrollTop = parseInt(savedScrollPosition, 10);
     }
   }, 100);
-
-  // dateRange.value = [...defaultRange];
 });
 
 onBeforeUnmount(() => {
@@ -132,10 +141,16 @@ const onSearch = () => {
   fetchItemsWithQuery();
 };
 
+const clearDateRange = () => {
+  dateRange.value = [];
+  fetchItemsWithQuery();
+};
+
 watch(searchQuery, onSearch);
 
 
 const onDateChange = () => {
+  pagination.value.current = 1;
   fetchItemsWithQuery();
 };
 const fetchItemsWithQuery = debounce(async () => {
