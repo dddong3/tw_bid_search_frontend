@@ -4,7 +4,7 @@ WORKDIR /app
 
 ARG BACKEND_API_URL
 
-COPY package.json yarn.lock .
+COPY package.json .
 
 RUN yarn install
 
