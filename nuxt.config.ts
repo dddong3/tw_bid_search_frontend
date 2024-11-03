@@ -8,17 +8,24 @@ export default defineNuxtConfig({
     }
   ],
   plugins: [
-    '~/plugins/graphql-client.ts'
+    '~/plugins/graphql-client.ts',
+    '~/plugins/ant-design-vue.ts',
+    '~/plugins/piniaPersist.client.ts',
   ],
   css: ['~/assets/css/tailwind.css'],
   modules: [
-    '@ant-design-vue/nuxt'
+    '@ant-design-vue/nuxt',
+    '@pinia/nuxt',
   ],
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
     },
+  },
+  pinia: {
+    disableVuex: true,
+    autoImports: ['defineStore', 'acceptHMRUpdate']
   },
   runtimeConfig: {
     public: {
