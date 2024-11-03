@@ -10,7 +10,7 @@ RUN yarn install
 
 COPY . .
 
-RUN yarn run build
+RUN yarn build
 
 FROM node:hydrogen-alpine AS production
 
