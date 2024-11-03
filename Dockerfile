@@ -4,7 +4,7 @@ WORKDIR /app
 
 ARG BACKEND_API_URL
 
-COPY package.json .
+COPY package.json yarn.lock ./
 
 RUN yarn install
 
@@ -17,5 +17,7 @@ FROM node:hydrogen-alpine AS production
 WORKDIR /app
 
 COPY --from=build /app/.output /app
+
+EXPOSE 3000
 
 CMD ["node", "server/index.mjs"]
