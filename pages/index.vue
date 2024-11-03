@@ -218,15 +218,4 @@ a-empty {
 .scroll-container::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
-
-.pagination-container {
-  position: fixed;
-  bottom: 20px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  background: white;
-  padding: 10px 0;
-}
-
 </style>
